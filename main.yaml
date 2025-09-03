@@ -1,0 +1,110 @@
+openapi: 3.0.3
+info:
+  title: STD24201
+  version: 1.0.0
+  description: This is a specification of STD24201
+
+servers:
+  - url: http://localhost:8000
+
+paths:
+  /health:
+    get:
+      summary: Get all cars
+      description: Returns a list of all cars in the database.
+      responses:
+        '200':
+          description: This is the list of all cars
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ["Audi", "BMW", "Mercedes"]
+
+  /cars:
+    post:
+      summary: Add a new car
+      description: Adds a car with its characteristics.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarBase'
+      responses:
+        '201':
+          description: Cars added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarBase'
+
+  /cars/{id}/characteristics:
+    put:
+      summary: Update cars characteristics
+      description: Update characteristics for a given car using inheritance.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the car
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarCharacteristicsUpdate'
+      responses:
+        '200':
+          description: Characteristics updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarCharacteristicsUpdate'
+
+
+components:
+  schemas:
+    Character:
+      type: object
+      properties:
+        color:
+          type: string
+          example: Black
+        model:
+          type: string
+          example: Model S
+        puissance:
+          type: string
+          example: 1020 ch
+
+    CarBase:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: CAR001
+        brand:
+          type: string
+          example: Audi
+        model:
+          type: string
+          example: A4
+        etat:
+          type: string
+          example: neuf
+
+
+      allOf:
+        - $ref: '#/components/schemas/CarBase'
+        - type: object
+          properties:
+            characteristics:
+              $ref: '#/components/schemas/Character'
+
+    CarCharacteristicsUpdate:
+      allOf:
+        - $ref: '#/components/schemas/Character'
+      description: Update only the characteristics of a car
